@@ -47,7 +47,7 @@ public abstract class MapReader {
       if (map.hasKey(key) && map.getType(key) == ReadableType.Boolean) {
         return map.getBoolean(key);
       } else {
-        return null;
+        return false;
       }
     }
   }
