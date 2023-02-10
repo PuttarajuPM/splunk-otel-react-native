@@ -82,11 +82,19 @@ public class SplunkOtelReactNativeModule extends ReactContextBaseJavaModule {
 
     String endpointWithAuthentication = beaconEndpoint + "?auth=" + accessToken;
 
-    if(isOtlp) {
-    exporter = new CrashEventAttributeExtractor(new ZipkinSpanExporterBuilder()
-      .setEndpoint(skipAuth ? beaconEndpoint : endpointWithAuthentication)
-      .setEncoder(skipEncode ? null : new CustomZipkinEncoder())
-      .build());
+    if(!isOtlp) {
+      ZipkinSpanExporterBuilder zipkinBuilder = new ZipkinSpanExporterBuilder();
+      if(skipAuth) {
+        zipkinBuilder.setEndpoint(beaconEndpoint);
+      }
+      else {
+        zipkinBuilder.setEndpoint(endpointWithAuthentication);
+      }
+      if(!skipEncode) {
+        zipkinBuilder.setEncoder(new CustomZipkinEncoder());
+      }
+    exporter = new CrashEventAttributeExtractor(
+      zipkinBuilder.build());
     }
     else {
     exporter = new CrashEventAttributeExtractor(OtlpHttpSpanExporter.builder()
